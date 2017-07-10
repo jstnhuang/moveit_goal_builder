@@ -141,7 +141,7 @@ class MoveItGoalBuilder(object):
             s.dimensions = [self.tolerance * self.tolerance]
             s.type = s.SPHERE
             b.primitives.append(s)
-            b.primitive_poses.append(self._pose_goal.pose)
+            b.primitive_poses.append(pose_transformed.pose)
             c1.position_constraints[0].constraint_region = b
             c1.position_constraints[0].weight = 1.0
 
