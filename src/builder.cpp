@@ -4,8 +4,8 @@
 #include <string>
 
 #include "geometry_msgs/Pose.h"
-#include "moveit/kinematic_constraints/utils.h"
 #include "moveit/robot_state/conversions.h"
+#include "moveit/robot_state/robot_state.h"
 #include "moveit_msgs/BoundingVolume.h"
 #include "moveit_msgs/Constraints.h"
 #include "moveit_msgs/JointConstraint.h"
@@ -19,9 +19,10 @@ typedef std::map<std::string, double> JointValues;
 typedef std::map<std::string, geometry_msgs::Pose> PoseGoals;
 
 namespace moveit_goal_builder {
-Builder::Builder()
-    : planning_frame("base_link"),
-      group_name(""),
+Builder::Builder(const std::string& planning_frame,
+                 const std::string& group_name)
+    : planning_frame(planning_frame),
+      group_name(group_name),
       plan_only(false),
       workspace_parameters(),
       planning_time(5.0),
@@ -73,12 +74,12 @@ void Builder::Build(moveit_msgs::MoveGroupGoal* goal) {
     }
     goal->request.goal_constraints[0] = c1;
   } else if (active_target_ == POSE) {
-    goal->request.goal_constraints.resize(pose_goals_.size());
-    size_t i = 0;
+    goal->request.goal_constraints.resize(1);
+    moveit_msgs::Constraints& constraint = goal->request.goal_constraints[0];
+
     for (PoseGoals::const_iterator it = pose_goals_.begin();
          it != pose_goals_.end(); ++it) {
-      moveit_msgs::Constraints& c = goal->request.goal_constraints[i];
-
+      // Add position constraint
       moveit_msgs::PositionConstraint pc;
       pc.header.frame_id = planning_frame;
       pc.link_name = it->first;
@@ -90,7 +91,7 @@ void Builder::Build(moveit_msgs::MoveGroupGoal* goal) {
       bv.primitive_poses.push_back(it->second);
       pc.constraint_region = bv;
       pc.weight = 1.0;
-      c.position_constraints.push_back(pc);
+      constraint.position_constraints.push_back(pc);
 
       moveit_msgs::OrientationConstraint oc;
       oc.header.frame_id = planning_frame;
@@ -100,9 +101,7 @@ void Builder::Build(moveit_msgs::MoveGroupGoal* goal) {
       oc.absolute_y_axis_tolerance = orientation_tolerance;
       oc.absolute_z_axis_tolerance = orientation_tolerance;
       oc.weight = 1.0;
-      c.orientation_constraints.push_back(oc);
-
-      ++i;
+      constraint.orientation_constraints.push_back(oc);
     }
   } else {
     ROS_ERROR_NAMED("moveit_goal_builder",
