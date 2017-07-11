@@ -42,7 +42,7 @@ Builder::Builder(const std::string& planning_frame,
       start_state_(),
       active_target_(JOINT) {}
 
-void Builder::Build(moveit_msgs::MoveGroupGoal* goal) {
+void Builder::Build(moveit_msgs::MoveGroupGoal* goal) const {
   goal->request.group_name = group_name;
   goal->request.num_planning_attempts = num_planning_attempts;
   goal->request.max_velocity_scaling_factor = max_velocity_scaling_factor;
@@ -119,7 +119,7 @@ void Builder::Build(moveit_msgs::MoveGroupGoal* goal) {
   goal->planning_options.planning_scene_diff.robot_state.is_diff = true;
 }
 
-void Builder::GetJointGoal(std::map<std::string, double>* joint_goal) {
+void Builder::GetJointGoal(std::map<std::string, double>* joint_goal) const {
   *joint_goal = joint_goal_;
 }
 
@@ -129,7 +129,7 @@ void Builder::SetJointGoal(const std::map<std::string, double>& joints) {
 }
 
 void Builder::GetPoseGoals(
-    std::map<std::string, geometry_msgs::Pose>* pose_goals) {
+    std::map<std::string, geometry_msgs::Pose>* pose_goals) const {
   *pose_goals = pose_goals_;
 }
 
@@ -147,7 +147,7 @@ void Builder::AddPoseGoal(const std::string& ee_link,
   pose_goals_[ee_link] = goal;
 }
 
-void Builder::GetPathConstraints(moveit_msgs::Constraints* constraints) {
+void Builder::GetPathConstraints(moveit_msgs::Constraints* constraints) const {
   *constraints = path_constraints_;
 }
 
@@ -167,7 +167,7 @@ void Builder::AddPathOrientationConstraint(
   path_constraints_.orientation_constraints.push_back(oc);
 }
 
-robot_state::RobotStatePtr Builder::StartState() { return start_state_; }
+robot_state::RobotStatePtr Builder::StartState() const { return start_state_; }
 
 void Builder::SetStartState(const robot_state::RobotState& start_state) {
   start_state_.reset(new robot_state::RobotState(start_state));

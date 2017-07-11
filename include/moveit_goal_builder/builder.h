@@ -37,15 +37,16 @@ const char kRRTConnect[] = "RRTConnectkConfigDefault";
 class Builder {
  public:
   Builder(const std::string& planning_frame, const std::string& group_name);
-  void Build(moveit_msgs::MoveGroupGoal* goal);
+  void Build(moveit_msgs::MoveGroupGoal* goal) const;
 
-  void GetJointGoal(std::map<std::string, double>* joint_goal);
+  void GetJointGoal(std::map<std::string, double>* joint_goal) const;
   // Set a joint goal. Does not check that the joint names are valid or that the
   // values are within limits. Setting a joint goal overrides any pose goals
   // that were previously set.
   void SetJointGoal(const std::map<std::string, double>& joints);
 
-  void GetPoseGoals(std::map<std::string, geometry_msgs::Pose>* pose_goals);
+  void GetPoseGoals(
+      std::map<std::string, geometry_msgs::Pose>* pose_goals) const;
   // Set a pose goal, one for each end-effector. Specify the end-effector link
   // and the pose it should reach. The pose should be specified in the planning
   // frame. Setting a pose goal overrides any previously set orientation goals.
@@ -55,13 +56,13 @@ class Builder {
   // Add a pose goal (set SetPoseGoals).
   void AddPoseGoal(const std::string& ee_link, const geometry_msgs::Pose& goal);
 
-  void GetPathConstraints(moveit_msgs::Constraints* constraints);
+  void GetPathConstraints(moveit_msgs::Constraints* constraints) const;
   void SetPathConstraints(const moveit_msgs::Constraints& constraints);
   void ClearPathConstraints();
   void AddPathOrientationConstraint(
       const moveit_msgs::OrientationConstraint& oc);
 
-  robot_state::RobotStatePtr StartState();
+  robot_state::RobotStatePtr StartState() const;
   void SetStartState(const robot_state::RobotState& start_state);
   void SetStartStateToCurrentState();
 
