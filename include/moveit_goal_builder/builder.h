@@ -24,11 +24,9 @@ const char kRRTConnect[] = "RRTConnectkConfigDefault";
 // the planning properties, which are exposed as public variables.
 //
 // Example:
-// moveit_goal_builder::Builder builder;
+// moveit_goal_builder::Builder builder("base_link", "arms");
 // builder.AddPoseGoal("r_wrist_roll_link", pose);
 // builder.AddPathOrientationConstraint(orientation_constraint);
-// builder.planning_frame = "base_link";
-// builder.group_name = "arms";
 // builder.planning_time = 10.0;
 // builder.num_planning_attempts = 3;
 // builder.can_replan = true;
@@ -38,7 +36,7 @@ const char kRRTConnect[] = "RRTConnectkConfigDefault";
 // builder.Build(&goal);
 class Builder {
  public:
-  Builder();
+  Builder(const std::string& planning_frame, const std::string& group_name);
   void Build(moveit_msgs::MoveGroupGoal* goal);
 
   void GetJointGoal(std::map<std::string, double>* joint_goal);
