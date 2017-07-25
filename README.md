@@ -24,8 +24,19 @@ moveit_msgs::MoveGroupGoal goal;
 builder.Build(&goal);
 ~~~
 
+## Python example
+~~~{.py}
+# To do a reachability check from the current robot pose.
+# To move to a current robot pose with a few options changed.
+builder = MoveItGoalBuilder()
+builder.set_pose_goal(pose_stamped)
+builder.replan = True
+builder.replan_attempts = 10
+goal = builder.build()
+~~~
+
 ## C++ vs. Python
 The C++ and Python APIs are similar, but with a few differences:
-- The C++ version supports multi-arm goals, the Python version does not
+- The C++ version supports multi-arm goals, the Python version does not.
 - The Python version takes PoseStamped messages for the pose goal and transforms them when you call `build`.
   The C++ version takes Pose messages, which are assumed to be in the planning frame.
