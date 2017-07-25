@@ -5,7 +5,7 @@
   <description>The moveit_goal_builder package</description>
   <maintainer email="jstn@cs.washington.edu">Justin Huang</maintainer>
   <license>BSD</license>
-  <!-- <url type="website">http://wiki.ros.org/moveit_goal_builder</url> -->
+  <url type="website">http://wiki.ros.org/moveit_goal_builder</url>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>actionlib</build_depend>
   <build_depend>geometry_msgs</build_depend>
