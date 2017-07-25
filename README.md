@@ -26,7 +26,6 @@ builder.Build(&goal);
 
 ## Python example
 ~~~{.py}
-# To do a reachability check from the current robot pose.
 # To move to a current robot pose with a few options changed.
 builder = MoveItGoalBuilder()
 builder.set_pose_goal(pose_stamped)
