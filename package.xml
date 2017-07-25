@@ -22,5 +22,6 @@
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <export>
+    <rosdoc config="rosdoc.yaml" />
   </export>
 </package>
