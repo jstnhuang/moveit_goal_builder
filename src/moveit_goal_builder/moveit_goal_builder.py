@@ -14,7 +14,8 @@ import tf
 class MoveItGoalBuilder(object):
     """Builds a MoveGroupGoal.
 
-    Example:
+    Example::
+
         # To do a reachability check from the current robot pose.
         builder = MoveItGoalBuilder()
         builder.set_pose_goal(pose_stamped)
@@ -29,20 +30,53 @@ class MoveItGoalBuilder(object):
         builder.replan_attempts = 10
         goal = builder.build()
 
-    Here are the most common class attributes you might set before calling
-    build(), and their default values:
+    Use ``set_pose_goal`` or ``set_joint_goal`` to set the actual goal. Pose
+    goals and joint goals are mutually exclusive; setting one will overwrite the
+    other.
 
-    allowed_planning_time: float=10. How much time to allow the planner,
-        in seconds.
-    group_name: string='arm'. Either 'arm' or 'arm_with_torso'.
-    num_planning_attempts: int=1. How many times to compute the same plan (most
-        planners are randomized). The shortest plan will be used.
-    plan_only: bool=False. Whether to only compute the plan but not execute it.
-    replan: bool=False. Whether to come up with a new plan if there was an
-        error executing the original plan.
-    replan_attempts: int=5. How many times to do replanning.
-    replay_delay: float=1. How long to wait in between replanning, in seconds.
-    tolerance: float=0.01. The tolerance, in meters for the goal pose.
+    Most of the builder is configured by setting public members.
+    Below is a list of all the public members you can set as well as their
+    default values:
+
+    allowed_planning_time = 10.0
+        float. How much time to allow the planner, in seconds.
+    fixed_frame = 'base_link'
+        string. The MoveIt planning frame.
+    gripper_frame = 'wrist_roll_link'
+        string. The name of the end-effector link.
+    group_name = 'arm'
+        string. The name of the MoveIt group to plan for.
+    planning_scene_diff
+        moveit_msgs.msg.PlanningScene. Changes to the planning scene to apply.
+        By default this is set to an empty planning scene.
+    look_around = False
+        bool. Whether or not the robot can look around during execution.
+    max_acceleration_scaling_factor = 0
+        float. The scaling factor for the maximum joint acceleration, in the
+        range [0, 1]. A value of 0 means there is no scaling factor.
+    max_velocity_scaling_factor = 0
+        float. Used to slow the executed action, this specifies the scaling
+        factor for the maximum velocity, in the range [0, 1]. A value of 0
+        means there is no scaling factor.
+    num_planning_attempts = 1
+        int. How many times to compute the same plan (most planners are
+        randomized). The shortest plan will be used.
+    plan_only = False
+        bool. Whether to only compute the plan but not execute it.
+    planner_id = 'RRTConnectkConfigDefault'
+        string. The name of the planner to use. A list of planner names can be
+        found using the rviz MotionPlanning plugin.
+    replan = False
+        bool. Whether to come up with a new plan if there was an error
+        executing the original plan.
+    replan_attempts = 5
+        int. How many times to do replanning.
+    replan_delay = 1.0
+        float. How long to wait in between replanning, in seconds.
+    tolerance = 0.01:
+        float. The tolerance radius, in meters, for the goal pose. If the
+        builder is used for a joint angle action, then tolerance specifies the
+        joint angle tolerance (both above and below) in radians.
     """
 
     def __init__(self):
@@ -61,7 +95,7 @@ class MoveItGoalBuilder(object):
         self.planner_id = 'RRTConnectkConfigDefault'
         self.replan = False
         self.replan_attempts = 5
-        self.replan_delay = 1
+        self.replan_delay = 1.0
         self.start_state = moveit_msgs.msg.RobotState()
         self.start_state.is_diff = True
         self.tolerance = 0.01
@@ -74,22 +108,23 @@ class MoveItGoalBuilder(object):
     def set_pose_goal(self, pose_stamped):
         """Sets a pose goal.
 
-        Pose and joint goals are mutually exclusive. The most recently set goal
-        wins.
+        .. note:: The pose will be transformed into the planning frame when
+            ``build`` is called.
 
-        Args:
-            pose_stamped: A geometry_msgs/PoseStamped.
+        :param pose_stamped: The pose goal for the end-effector.
+        :type pose_stamped: geometry_msgs.msg.PoseStamped
         """
         self._pose_goal = pose_stamped
         self._joint_names = None
         self._joint_positions = None
 
     def set_joint_goal(self, joint_names, joint_positions):
-        """Set a joint-space planning goal.
+        """Sets a joint-space planning goal.
 
-        Args:
-            joint_names: A list of strings. The names of the joints in the goal.
-            joint_positions: A list of floats. The joint angles to achieve.
+        :param joint_names: The names of the joints in the goal.
+        :type joint_names: list of strings
+        :param joint_positions: The joint angles to achieve.
+        :type joint_positions: list of floats
         """
         self._joint_names = joint_names
         self._joint_positions = joint_positions
@@ -98,24 +133,26 @@ class MoveItGoalBuilder(object):
     def add_path_orientation_constraint(self, o_constraint):
         """Adds an orientation constraint to the path.
 
-        Args:
-            o_constraint: A moveit_msgs/OrientationConstraint.
+        .. note:: Make more advanced edits to the orientation constraints by
+            modifying _orientation_constraints directly.
+
+        :param o_constraint: The orientation constraint to add.
+        :type o_constraint: moveit_msgs.msg.OrientationConstraint
         """
         self._orientation_constraints.append(copy.deepcopy(o_constraint))
-        self.planner_id = 'RRTConnectkConfigDefault'
 
     def build(self, tf_timeout=rospy.Duration(5.0)):
         """Builds the goal message.
 
-        To set a pose or joint goal, call set_pose_goal or set_joint_goal
-        before calling build. To add a path orientation constraint, call
-        add_path_orientation_constraint first.
+        To set a pose or joint goal, call ``set_pose_goal`` or
+        ``set_joint_goal`` before calling ``build``. To add a path orientation
+        constraint, call ``add_path_orientation_constraint`` first.
 
-        Args:
-            tf_timeout: rospy.Duration. How long to wait for a TF message. Only
-                used with pose goals.
-
-        Returns: moveit_msgs/MoveGroupGoal
+        :param tf_timeout: How long to wait for a TF message. Only used with
+            pose goals.
+        :type tf_timeout: rospy.Duration
+        :return: The MoveGroup action goal.
+        :rtype: moveit_msgs.msg.MoveGroupGoal
         """
         goal = MoveGroupGoal()
 
@@ -171,7 +208,7 @@ class MoveItGoalBuilder(object):
             goal.request.goal_constraints.append(c1)
 
         # Set path constraints
-        goal.request.path_constraints.orientation_constraints = self._orientation_constraints 
+        goal.request.path_constraints.orientation_constraints = self._orientation_constraints
 
         # Set trajectory constraints
 
