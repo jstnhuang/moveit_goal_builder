@@ -1,2 +1,6 @@
 - builder: doxygen
   file_patterns: '*.cpp *.h *.dox *.md'
+  output_dir: cpp_docs
+- builder: sphinx
+  file_patterns: '*.py'
+  output_dir: py_docs
