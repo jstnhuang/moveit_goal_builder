@@ -2,8 +2,8 @@
 Changelog for package moveit_goal_builder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.1 (2017-07-26)
+------------------
 * Added dependency on TF.
 * Updated documentation.
 * Contributors: Justin Huang
