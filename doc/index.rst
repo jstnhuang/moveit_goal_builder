@@ -30,6 +30,7 @@ To move to a current robot pose with a few options changed.
   move_group_action = actionlib.SimpleActionClient('move_group', moveit_msgs.msg.MoveGroupAction)
   move_group_action.send_goal(goal)
 
+Note that the pose goal is transformed into the builder's fixed_frame once you call build().
 See :doc:`moveit_goal_builder` for full API documentation.
 
 
