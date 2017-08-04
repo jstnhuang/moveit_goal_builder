@@ -7,20 +7,16 @@ Goal builder for MoveIt's MoveGroup action.
 This is useful for when you want to use the MoveGroup actionlib interface directly, instead of using the MoveGroup class.
 This allows you to poll when the action is done, which the normal MoveGroup interface does not allow you to do.
 
-robot_markers::Builder is the main API. To use it:
-- Construct the Builder with a URDF.
-- Call Init().
-- Set marker properties.
+moveit_goal_builder::Builder is the main API. To use it:
+- Construct the Builder with the fixed frame and MoveItGroup name.
+- Add a pose or joint goal with AddPoseGoal() or SetJointGoal().
+- Set other options.
 - Call Build().
-
-At a minimum, you should set the namespace and frame ID of the robot.
-The robot will be at the origin of the frame ID, with all joint angles set to 0 (or however the URDF is defined).
-This uses the mesh color by default, if a mesh is available.
-If the URDF does not specify meshes for the visual components, then you must supply a color, as well.
 
 \section cpp C++ example
 
 \code
+
 #include "moveit_goal_builder/builder.h"
 
 moveit_goal_builder::Builder builder("base_link", "arms");
